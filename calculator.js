@@ -7,8 +7,7 @@ function BuyingCapacityCalculator() {
 
     const [results, setResults] = React.useState({
         isValid: false,
-        message: '',
-        monthlyPayment: 0
+        message: ''
     });
 
     const calculateCapacity = () => {
@@ -18,11 +17,9 @@ function BuyingCapacityCalculator() {
         // Montant du prêt
         const loanAmount = data.propertyPrice - data.downPayment;
         
-        // Calcul du paiement mensuel théorique (taux à 5%)
-        const monthlyPayment = (loanAmount * 0.05) / 12;
-        
         // Calcul de la charge mensuelle par rapport au revenu
         const monthlyIncome = data.annualIncome / 12;
+        const monthlyPayment = (loanAmount * 0.05) / 12;
         const paymentRatio = (monthlyPayment / monthlyIncome) * 100;
 
         let isValid = true;
@@ -34,22 +31,17 @@ function BuyingCapacityCalculator() {
         } else if (paymentRatio > 33) {
             isValid = false;
             message = 'La charge mensuelle est trop élevée par rapport à vos revenus';
-        } else {
-            message = 'Votre capacité financière est suffisante';
         }
 
         setResults({
             isValid,
-            message,
-            monthlyPayment
+            message
         });
     };
 
     React.useEffect(() => {
         calculateCapacity();
     }, [data]);
-
-// ... (le reste du code reste identique jusqu'au return)
 
     return (
         <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-xl">
