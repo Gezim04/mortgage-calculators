@@ -11,31 +11,33 @@ function BuyingCapacityCalculator() {
     });
 
     const calculateCapacity = () => {
-        // Calculer le pourcentage de fonds propres
+        // Vérification des fonds propres (20% minimum)
         const downPaymentPercentage = (data.downPayment / data.propertyPrice) * 100;
         
-        // Montant du prêt
-        const loanAmount = data.propertyPrice - data.downPayment;
-        
-        // Calcul de la charge mensuelle par rapport au revenu
-        const monthlyIncome = data.annualIncome / 12;
-        const monthlyPayment = (loanAmount * 0.05) / 12;
-        const paymentRatio = (monthlyPayment / monthlyIncome) * 100;
-
-        let isValid = true;
-        let message = '';
-
         if (downPaymentPercentage < 20) {
-            isValid = false;
-            message = 'Les fonds propres doivent représenter au moins 20% du prix d\'achat';
-        } else if (paymentRatio > 33) {
-            isValid = false;
-            message = 'La charge mensuelle est trop élevée par rapport à vos revenus';
+            setResults({
+                isValid: false,
+                message: 'Les fonds propres doivent représenter au moins 20% du prix d\'achat'
+            });
+            return;
         }
 
+        // Calcul selon la formule
+        const mortgageAmount = data.propertyPrice - data.downPayment; // Montant hypothécaire
+        const annualInterest = mortgageAmount * 0.05; // Intérêts annuels (5%)
+        const twoThirdsValue = (data.propertyPrice * 2) / 3; // 2/3 de la valeur du bien
+        const annualAmortization = (mortgageAmount - twoThirdsValue) / 15; // Amortissement annuel
+        const maintenanceCosts = data.propertyPrice * 0.01; // Frais d'entretien (1%)
+
+        // Coût annuel total
+        const totalAnnualCost = annualInterest + annualAmortization + maintenanceCosts;
+
+        // Ratio d'endettement
+        const debtRatio = (totalAnnualCost / data.annualIncome) * 100;
+
         setResults({
-            isValid,
-            message
+            isValid: debtRatio <= 33,
+            message: debtRatio > 33 ? 'Le ratio d\'endettement dépasse 33% de vos revenus' : ''
         });
     };
 
