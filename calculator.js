@@ -1,7 +1,7 @@
 function BuyingCapacityCalculator() {
     const [data, setData] = React.useState({
         propertyPrice: 1000000,
-        annualIncome: 150000,
+        annualIncome: 180000,
         downPayment: 200000,
     });
 
